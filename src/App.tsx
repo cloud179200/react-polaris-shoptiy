@@ -1,7 +1,7 @@
 import '@shopify/polaris/build/esm/styles.css';
 import { AppProvider, Page } from '@shopify/polaris';
 import enTranslations from '@shopify/polaris/locales/en.json';
-import Form from './Form';
+import Form from './Component';
 
 function App() {
   return (
