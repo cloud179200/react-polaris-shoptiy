@@ -1,2 +1,12 @@
 @import '@shopify/polaris/build/esm/styles.css';
 @import 'https://fonts.googleapis.com/css2?family=Inter:wght@450;550;650;700&display=swap';
+
+.form-layout-wrapper{
+  display: flex;
+  justify-content: center;
+}
+
+.form-layout-wrapper > .Polaris-Layout{
+  width: 100%;
+  max-width: 900px;
+}

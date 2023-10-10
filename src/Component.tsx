@@ -1,34 +1,29 @@
-import { Grid, InlineStack, Button, Text } from "@shopify/polaris";
-import { ArrowLeftMinor } from "@shopify/polaris-icons";
-import Form from "./Form";
+import { Page, Layout } from "@shopify/polaris";
+import Form, { IVolumeDiscountRule } from "./Form";
+import { useState } from "react";
+import Preview from "./Preview";
+import Navigation from "./Navigation";
 
 
-function Component() {
+const Component = () => {
+  const [listPreview, setListPreview] = useState<Array<IVolumeDiscountRule>>([])
+
   return (
-    <div style={{
-      width: "100%",
-      maxWidth: "100vh",
-      marginLeft: "calc((100% - 768px)/2)",
-      marginRight: "calc((100% - 768px)/2)"
-    }}>
-      <Grid columns={{ xs: 6, md: 6, lg: 6, xl: 6 }}>
-        <Grid.Cell columnSpan={{ xs: 6, md: 6, lg: 6, xl: 6 }}>
-          <InlineStack
-            wrap={false}
-            gap={{ xs: "200", sm: "300", md: "400", lg: "500", xl: "600" }}
-            blockAlign="center"
-          >
-            <Button size="large" icon={ArrowLeftMinor} />
-            <Text variant="headingXl" as="h4">
-              Create Volume Discount
-            </Text>
-          </InlineStack>
-        </Grid.Cell>
-        <Grid.Cell columnSpan={{ xs: 6, md: 6, lg: 6, xl: 6 }}>
-          <Form />
-        </Grid.Cell>
-      </Grid>
-    </div>
+    <Page fullWidth>
+      <div className="form-layout-wrapper">
+        <Layout>
+          <Layout.Section variant="fullWidth">
+            <Navigation />
+          </Layout.Section>
+          <Layout.Section>
+            <Form setListPreview={setListPreview} />
+          </Layout.Section>
+          <Layout.Section variant="oneThird">
+            <Preview listPreview={listPreview} />
+          </Layout.Section>
+        </Layout>
+      </div>
+    </Page >
   );
 }
 
