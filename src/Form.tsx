@@ -19,6 +19,7 @@ import { formValuesSchema } from "./schema";
 import { CirclePlusMajor, DeleteMajor } from '@shopify/polaris-icons';
 import { DISCOUNT_TYPE } from "./constant";
 import { usePrevious } from "react-use";
+import React from "react";
 
 export interface IVolumeDiscountRule {
   title: string;
@@ -64,13 +65,14 @@ const useFormControl = () => {
     onSubmit: (values) => {
       debugger
     },
+    validateOnChange: true
   });
 
   const { values, setValues, errors, touched, handleBlur, setTouched, setFieldValue } = formik;
   const prevValues = usePrevious(values);
 
   const handleChange = (value: string, id: string) => {
-    setFieldValue(id, value)
+    setFieldValue(id, value, true)
   };
 
   const handleAddVolumeDiscountRule = () => {
@@ -80,8 +82,8 @@ const useFormControl = () => {
   }
 
   const handleRemoveVolumeDiscountRule = (index: number) => {
-    const newRules = _.cloneDeep(values.volumeDiscountRules || []).splice(index, 1)
-    setFieldValue("volumeDiscountRules", newRules)
+    const rules = _.cloneDeep(values.volumeDiscountRules || [])
+    setFieldValue("volumeDiscountRules", rules.slice(0, index).concat(rules.slice(index + 1)))
   }
 
   return {
@@ -160,7 +162,7 @@ const Form = (props: IFormProps) => {
         id: `volumeDiscountRules[${index}].subTitle`,
         value: item.subTitle,
         onChange: handleChange,
-        error: Boolean(rulesErrors.at(index)?.title && rulesTouched.at(index)?.subTitle) ? rulesErrors.at(index)?.subTitle : "",
+        error: Boolean(rulesErrors.at(index)?.subTitle && rulesTouched.at(index)?.subTitle) ? rulesErrors.at(index)?.subTitle : "",
         onBlur: handleBlur
       },
       {
@@ -220,22 +222,26 @@ const Form = (props: IFormProps) => {
   ))
 
   const volumeDiscountRuleRender = volumeDiscountRuleFieldsProps.map((item, index) => {
-    const textFieldRender = item.textFieldsProps.map((props) => (<TextField key={props.id + `_filed_volume_container_${index}`} {...props} />));
-    return <Box key={`_volume_container_${index}`} paddingInlineEnd={"400"} paddingInlineStart={"400"}>
-      <Box width="100%" padding={"200"}>
-        <InlineStack align="end"> <Button variant="tertiary" size="large" icon={DeleteMajor} onClick={() => handleRemoveVolumeDiscountRule(index)} /></InlineStack>
-      </Box>
-      <Box width="100%" paddingBlockEnd={"400"}>
-        <FormLayout>
-          <FormLayout.Group condensed>
-            {textFieldRender}
-            <Select {...item.discountTypeProps.selectProps} />
-            {item.discountTypeProps.selectProps.value !== DISCOUNT_TYPE.NONE.value &&
-              <TextField {...item.discountTypeProps.amountProps} suffix={Object.values(DISCOUNT_TYPE).find(type => type.value === item.discountTypeProps.selectProps.value)?.suffix || ""} />}
-          </FormLayout.Group>
-        </FormLayout>
-      </Box>
-    </Box>
+    const textFieldRender = item.textFieldsProps.map((props, childIndex) => (<TextField key={props.id + `_filed_volume_container_${index}_${childIndex}`} {...props} />));
+    return <div key={`_volume_container_${index}`} className="volume_container">
+      <span className="volume_container_label"><Text as="h6" variant="headingMd">OPTION {index}</Text></span>
+        <Box paddingBlockStart={"600"} paddingInlineEnd={"400"} paddingInlineStart={"400"}>
+          <Box width="100%" padding={"200"}>
+            <InlineStack align="end"> <Button variant="tertiary" size="large" icon={DeleteMajor} onClick={() => handleRemoveVolumeDiscountRule(index)} /></InlineStack>
+          </Box>
+          <Box width="100%" paddingBlockEnd={"400"}>
+            <FormLayout>
+              <FormLayout.Group condensed>
+                {textFieldRender}
+                <Select {...item.discountTypeProps.selectProps} />
+                {item.discountTypeProps.selectProps.value !== DISCOUNT_TYPE.NONE.value &&
+                  <TextField {...item.discountTypeProps.amountProps} suffix={Object.values(DISCOUNT_TYPE).find(type => type.value === item.discountTypeProps.selectProps.value)?.suffix || ""} />}
+              </FormLayout.Group>
+            </FormLayout>
+          </Box>
+        </Box>
+        <Divider borderColor="border" borderWidth="050" />
+      </div>
   })
 
   useEffect(() => {
@@ -243,9 +249,6 @@ const Form = (props: IFormProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [_.isEqual(values, prevValues)])
 
-  console.log("[values]", values)
-  console.log("[errors]", errors)
-  console.log("[touched]", touched)
   return (
     <>
       <BlockStack gap={"400"}>

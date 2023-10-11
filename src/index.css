@@ -10,3 +10,20 @@
   width: 100%;
   max-width: 900px;
 }
+
+.volume_container{
+  position: relative;
+}
+
+.volume_container > .volume_container_label{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  padding: var(--p-space-200);
+  color: var(--p-color-text-critical-on-bg-fill);
+  background-color: var(--p-color-bg-fill-critical);
+  border-bottom-right-radius: var(--p-border-radius-300);
+}
